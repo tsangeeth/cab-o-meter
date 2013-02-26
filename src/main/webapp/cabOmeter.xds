@@ -1,0 +1,84 @@
+{
+    "name": "cabOmeter",
+    "settings": {
+        "urlPrefix": "http://localhost/cabOmeter",
+        "spacesToIndent": 4,
+        "exportPath": "C:/Apache2.2/htdocs/cabOmeter",
+        "sdkPath": "",
+        "lineEnding": "CRLF",
+        "genTimestamps": false,
+        "cacheBust": false
+    },
+    "xdsVersion": "2.1.0",
+    "xdsBuild": 678,
+    "schemaVersion": 1,
+    "upgradeVersion": 210000000498,
+    "framework": "ext41",
+    "topInstanceFileMap": {
+        "6d01cca9-d110-4a7b-8d52-0ead9718916c": {
+            "paths": [
+                "metadata/resource/Library"
+            ],
+            "className": "Library"
+        },
+        "badce5d4-f868-4d67-b6c7-0bade710da2e": {
+            "paths": [
+                "metadata/view/LoginForm",
+                "app/view/override/LoginForm.js",
+                "app/view/LoginForm.js"
+            ],
+            "className": "LoginForm"
+        },
+        "0ba8d28a-85f4-424f-8d89-28f85515c29d": {
+            "paths": [
+                "metadata/view/CabRequestCancel",
+                "app/view/override/CabRequestCancel.js",
+                "app/view/CabRequestCancel.js"
+            ],
+            "className": "CabRequestCancel"
+        },
+        "0167671d-670b-4452-9997-c05392a356db": {
+            "paths": [
+                "metadata/view/ManagerView",
+                "app/view/override/ManagerView.js",
+                "app/view/ManagerView.js"
+            ],
+            "className": "ManagerView"
+        },
+        "2590ea6e-160a-4c85-a58b-8108597f79ad": {
+            "paths": [
+                "metadata/view/TripScheduler",
+                "app/view/override/TripScheduler.js",
+                "app/view/TripScheduler.js"
+            ],
+            "className": "TripScheduler"
+        },
+        "97145e26-dd03-4170-bf44-5d16de808e59": {
+            "paths": [
+                "metadata/view/TripPlanner",
+                "app/view/override/TripPlanner.js",
+                "app/view/TripPlanner.js",
+                "app/view/Viewport.js"
+            ],
+            "className": "TripPlanner"
+        }
+    },
+    "viewOrderMap": {
+        "view": [
+            "0ba8d28a-85f4-424f-8d89-28f85515c29d",
+            "2590ea6e-160a-4c85-a58b-8108597f79ad",
+            "97145e26-dd03-4170-bf44-5d16de808e59",
+            "badce5d4-f868-4d67-b6c7-0bade710da2e",
+            "0167671d-670b-4452-9997-c05392a356db"
+        ],
+        "store": [],
+        "controller": [],
+        "model": [],
+        "resource": [
+            "6d01cca9-d110-4a7b-8d52-0ead9718916c"
+        ],
+        "app": [
+            "application"
+        ]
+    }
+}
