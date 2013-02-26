@@ -38,6 +38,11 @@ import org.springframework.test.web.server.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.sangeeth.cab.configuration.WebConfiguration;
+import com.sangeeth.cab.contract.Address;
+import com.sangeeth.cab.contract.User;
+import com.sangeeth.cab.web.authentication.AutoLoginInterceptor;
+import com.sangeeth.cab.web.authentication.IAutheticationStore;
+import com.sangeeth.cab.web.configuration.TestWebConfiguration;
 
 
 
@@ -48,27 +53,38 @@ import static java.util.Arrays.*;
 //@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = { WebConfiguration.class})
-public class EmployeeControllerTest  {
+@ContextConfiguration(classes = {WebConfiguration.class, TestWebConfiguration.class})
+public class UserControllerTest  {
 	
 	
 	@Autowired
 	private WebApplicationContext context;
+	
+	@Autowired
+	private AutoLoginInterceptor loginInterceptor;
+
 
 	private MockMvc mvc;
+
+	private User defaultUser;
 	
 	
 	@Before
 	public void setup() {
 		this.mvc = MockMvcBuilders.webApplicationContextSetup(context).build();
+		Address address = new Address("No.10, 12th Avenue", "Madagacar Street", "Kingston Cross", "Fantasy City", "Utopia","near Atlantis");
+		defaultUser = new User("JB442X", "John", "Doe","Arumugam", "admin", "administration", address);
 	}
 
 	@Test
 	public void shouldGiveInformationAboutEmployee() throws Exception {
+		// Arrange
+		loginInterceptor.signIn(defaultUser);
+		
 		// Act
 		MediaType jsonType = MediaType.APPLICATION_JSON;
 		
-		mvc.perform(get("/employee/{id}","JB442X").accept(jsonType))
+		mvc.perform(get("/user").accept(jsonType))
 		//Assert
 			.andExpect(status().isOk())
 			.andExpect(content().mimeType(jsonType)) 
@@ -86,13 +102,6 @@ public class EmployeeControllerTest  {
 			.andExpect(jsonPath("$.address.landmark").value("near Atlantis"));
 	}
 	
-	@Test
-	public void shouldCreateCabRequest(){
-MediaType jsonType = MediaType.APPLICATION_JSON;
-		
-//		mvc.perform(post("/request/new").accept(jsonType));
-			
-		
-	}
+
 
 }

@@ -1,7 +1,7 @@
 package com.sangeeth.cab.contract;
 
 
-public class UserInformation {
+public class User {
 	private final String employeeId;
 	private final String firstName;
 	private final String lastName;
@@ -9,7 +9,7 @@ public class UserInformation {
 	private final String role;
 	private final String costCentre;
 	private final Address address;
-	public UserInformation(String employeeId, String firstName,
+	public User(String employeeId, String firstName,
 			String lastName, String middleName, String role, String costCentre, Address address) {
 		super();
 		this.employeeId = employeeId;
