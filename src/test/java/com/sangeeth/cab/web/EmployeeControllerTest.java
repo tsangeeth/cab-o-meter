@@ -1,5 +1,4 @@
 package com.sangeeth.cab.web;
-
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -30,13 +29,17 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.server.MockMvc;
 import org.springframework.test.web.server.MvcResult;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.googlecode.flyway.test.annotation.FlywayTest;
+import com.googlecode.flyway.test.junit.FlywayTestExecutionListener;
 import com.sangeeth.cab.configuration.WebConfiguration;
 import com.sangeeth.cab.contract.Address;
 import com.sangeeth.cab.contract.User;
@@ -54,7 +57,8 @@ import static java.util.Arrays.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(classes = {WebConfiguration.class, TestWebConfiguration.class})
-public class UserControllerTest  {
+@TestExecutionListeners({DependencyInjectionTestExecutionListener.class, FlywayTestExecutionListener.class })
+public class EmployeeControllerTest  {
 	
 	
 	@Autowired
@@ -65,45 +69,27 @@ public class UserControllerTest  {
 
 
 	private MockMvc mvc;
-
-	private User defaultUser;
-	
 	
 	@Before
 	public void setup() {
 		this.mvc = MockMvcBuilders.webApplicationContextSetup(context).build();
-		Address address = new Address("No.10, 12th Avenue", "Madagacar Street", "Kingston Cross", "Fantasy City", "Utopia","near Atlantis");
-		defaultUser = new User("JB442X", "John", "Doe","Arumugam", "admin", "administration", address);
 	}
 
+//	, "PC0283"
+//	 ( 'PC0034','Ignatius','Gilbert','Employee','Todd',12345,'TEAM-A','1000000032','1000000032','1000000032','Sonia@pretium.org','PC0001','F' );
+
 	@Test
-	public void shouldGiveInformationAboutEmployee() throws Exception {
-		// Arrange
-		loginInterceptor.signIn(defaultUser);
-		
+	@FlywayTest(locationsForMigrate="/db/test-seed")
+	public void shouldSearchForEmployeeBasedOnHisLastName() throws Exception{
 		// Act
 		MediaType jsonType = MediaType.APPLICATION_JSON;
 		
-		System.out.println(mvc.perform(get("/user").accept(jsonType)).andReturn().getResponse().getContentAsString());
 		
-		mvc.perform(get("/user").accept(jsonType))
-		//Assert
-			.andExpect(status().isOk())
-			.andExpect(content().mimeType(jsonType)) 
-			.andExpect(jsonPath("$.employeeId").value("JB442X"))
-			.andExpect(jsonPath("$.firstName").value("John"))
-			.andExpect(jsonPath("$.lastName").value("Doe"))
-			.andExpect(jsonPath("$.middleName").value("Arumugam"))
-			.andExpect(jsonPath("$.role").value("admin"))
-			.andExpect(jsonPath("$.costCentre").value("administration"))
-			.andExpect(jsonPath("$.address.line1").value("No.10, 12th Avenue"))
-			.andExpect(jsonPath("$.address.line2").value("Madagacar Street"))
-			.andExpect(jsonPath("$.address.locality").value("Kingston Cross"))
-			.andExpect(jsonPath("$.address.city").value("Fantasy City"))
-			.andExpect(jsonPath("$.address.state").value("Utopia"))
-			.andExpect(jsonPath("$.address.landmark").value("near Atlantis"));
+		mvc.perform(get("/employees?name=John").accept(jsonType))
+								.andExpect(status().isOk())
+								.andExpect(content().mimeType(jsonType))
+								.andExpect(jsonPath("$..employeeId").value(asList("PC0282"))); 
+										
 	}
 	
-
-
 }

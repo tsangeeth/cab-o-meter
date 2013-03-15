@@ -5,8 +5,10 @@ import javax.sql.DataSource;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -14,7 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.googlecode.flyway.core.Flyway;
-import com.sangeeth.cab.configuration.DbConfiguration;
+import com.sangeeth.cab.configuration.RepositoryConfiguration;
 import com.sangeeth.cab.employee.CostCenter;
 import com.sangeeth.cab.employee.Email;
 import com.sangeeth.cab.employee.Employee;
@@ -26,14 +28,14 @@ import com.sangeeth.cab.repository.DbTestConfiguration;
 
 public class EmployeeRepositoryTest {
 
-	public Flyway flyway;
-	AnnotationConfigApplicationContext context;
-	private JdbcTemplate dbtemplate;
+	public static Flyway flyway;
+	static AnnotationConfigApplicationContext context;
+	private static JdbcTemplate dbtemplate;
 	
-	@Before
-	public void setup(){
+	@BeforeClass
+	public static void setup(){
 		
-		context = new AnnotationConfigApplicationContext(DbConfiguration.class, DbTestConfiguration.class);
+		context = new AnnotationConfigApplicationContext(RepositoryConfiguration.class, DbTestConfiguration.class);
 		context.getEnvironment().setActiveProfiles("integrated");
 		
 
@@ -48,8 +50,8 @@ public class EmployeeRepositoryTest {
 
 	}
 	
-	@After
-	public void cleanup(){
+	@AfterClass
+	public static void cleanup(){
 		flyway.clean();
 		context.close();
 	}
@@ -90,7 +92,7 @@ public class EmployeeRepositoryTest {
 
 		Name name = new Name("hugh", "jackman", null);
 		
-		Employee employee = new Employee(new EmployeeId("V2124"), name, Role.EMPLOYEE,new CostCenter("beggar_bowl"),"team42","9999999999", null, null, new Email("name@company.com"), null,Gender.MALE);
+		Employee employee = new Employee(new EmployeeId("V2124"), name, Role.EMPLOYEE,new CostCenter("beggar_bowl"),"team42","9999999999", null, null, new Email("email@company.com"), null,Gender.MALE);
 		repository.create(employee);
 
 		

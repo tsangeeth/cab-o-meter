@@ -12,13 +12,12 @@ import com.sangeeth.cab.web.authentication.Authentication;
 import com.sangeeth.cab.web.authentication.IAutheticationStore;
 
 @Controller
-@RequestMapping("/user")
 public class UserController {
 	
 	@Autowired
 	private IAutheticationStore authenticationStore;
 	
-	@RequestMapping(value = "", method = RequestMethod.GET, produces="application/json")
+	@RequestMapping(value = "/user", method = RequestMethod.GET, produces="application/json")
 	public User getUser(){
 		Authentication authentication = authenticationStore.get();
 		

@@ -12,7 +12,7 @@ import com.sangeeth.cab.employee.EmployeeRepository;
 import com.sangeeth.cab.employee.IEmployeeRepository;
 
 @Configuration
-public class DbConfiguration {
+public class RepositoryConfiguration {
 
 	@Autowired
 	private DataSource dataSource;

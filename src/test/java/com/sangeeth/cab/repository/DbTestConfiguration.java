@@ -16,7 +16,7 @@ public class DbTestConfiguration {
 		Flyway flyway = new Flyway();
 		flyway.setDataSource(datasource());
 		flyway.setLocations("db/migration");
-		flyway.setSchemas("cab_o_meter");
+		flyway.setSchemas("test_cab_o_meter");
 		return flyway;
 	}
 	
@@ -24,7 +24,7 @@ public class DbTestConfiguration {
 	public DataSource datasource(){
 		DriverManagerDataSource dataSource = new DriverManagerDataSource(); 
 		dataSource.setDriverClassName("com.mysql.jdbc.Driver"); 
-		dataSource.setUrl("jdbc:mysql://172.16.0.10:3306/cab_o_meter"); 
+		dataSource.setUrl("jdbc:mysql://mysql.cabometer.com:3306/test_cab_o_meter"); 
 		dataSource.setUsername("cabwala");
 		dataSource.setPassword("secret");
 		return dataSource;

@@ -19,11 +19,11 @@ Ext.Loader.setConfig({
 
 Ext.application({
     views: [
-        'LoginForm',
-        'CabRequestCancel',
-        'ManagerView',
-        'TripScheduler',
-        'TripPlanner'
+//        'LoginForm',
+//        'ManagerView',
+//        'TripScheduler',
+//        'TripPlanner',
+        'CabRequestCancel'
     ],
     autoCreateViewport: true,
     name: 'MyApp'

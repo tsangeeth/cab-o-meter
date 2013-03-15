@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 @Configuration
-@Profile("deployed")
 public class DeployedConfiguration {
 	@Bean
 	public DataSource dataSource(){

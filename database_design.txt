@@ -1,0 +1,76 @@
+Employee
+  id
+  employee_id
+  first_name
+  last_name
+  middle_name
+  role
+  cost_centre
+  team_name
+  contact_no
+  email
+  manager_id
+  gender
+
+
+Address
+  line1
+  line2
+  locality
+  city
+  state
+  landmark
+
+Request
+  id
+  employee_key
+  create_date
+  update_date
+  created_by
+  start_date
+  login_time
+  end_date
+  logout_time
+  isApproved
+
+Cancellation
+  cancellation_id
+  cancelled_by
+  cancelation_datetime
+  request_id
+  reason
+  employee_key
+  trip_datetime
+
+CabInformation
+  registration_number
+  agency_name
+  model_name
+  capacity
+  default_driver_id
+
+Driver
+  driver_id
+  driverName
+  agency
+  license_no
+  license_expiry_date
+  address
+  contact_no
+
+Trip_Planner
+  trip_id
+  trip_date
+  trip_time
+  cab_id
+  driver_id
+  route_name
+  cost
+  pickupOrDrop
+
+  Trip_Employees
+    request_id
+    employee_id
+    employee_name
+    cost_centre
+    pickup_drop_location

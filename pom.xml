@@ -13,7 +13,7 @@
 		<org.slf4j.version>1.6.6</org.slf4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<cab.db.url>jdbc:mysql://172.16.0.10:3306/cab_o_meter</cab.db.url>
+		<cab.db.url>jdbc:mysql://mysql.cabometer.com:3306/test_cab_o_meter</cab.db.url>
 		<cab.db.user>cabwala</cab.db.user>
 		<cab.db.password>secret</cab.db.password>
 		<cab.db.name>cab_o_meter</cab.db.name>

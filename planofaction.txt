@@ -1,0 +1,11 @@
+reset changes in pom.xml
+move seed data to another folder and refer it separately in pom.xml
+
+In Java, create separate spring profile for test and deployed. and create two configurations. keep deployed in test source location.
+
+In test configuration, not only initialize datasource, but also initialize flyway. 
+use flywaytest anotation to initialize db.
+
+In deployed configuration just create datasource.
+
+Externalize datasource settings from maven, so that they can be shared in spring and not duplicated.
