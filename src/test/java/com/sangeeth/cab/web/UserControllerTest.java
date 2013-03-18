@@ -37,6 +37,7 @@ import org.springframework.test.web.server.MvcResult;
 import org.springframework.test.web.server.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.sangeeth.cab.configuration.ServiceConfiguration;
 import com.sangeeth.cab.configuration.WebConfiguration;
 import com.sangeeth.cab.contract.Address;
 import com.sangeeth.cab.contract.User;
@@ -53,7 +54,7 @@ import static java.util.Arrays.*;
 //@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {WebConfiguration.class, TestWebConfiguration.class})
+@ContextConfiguration(classes = {WebConfiguration.class, ServiceConfiguration.class, TestWebConfiguration.class})
 public class UserControllerTest  {
 	
 	

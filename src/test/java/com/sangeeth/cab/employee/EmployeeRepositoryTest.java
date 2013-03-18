@@ -1,29 +1,20 @@
 package com.sangeeth.cab.employee;
 
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
 import javax.sql.DataSource;
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
-import org.junit.After;
+
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 
 import com.googlecode.flyway.core.Flyway;
-import com.sangeeth.cab.configuration.RepositoryConfiguration;
-import com.sangeeth.cab.employee.CostCenter;
-import com.sangeeth.cab.employee.Email;
-import com.sangeeth.cab.employee.Employee;
-import com.sangeeth.cab.employee.EmployeeMapper;
-import com.sangeeth.cab.employee.Manager;
-import com.sangeeth.cab.employee.Name;
-import com.sangeeth.cab.employee.Role;
+import com.sangeeth.cab.configuration.ServiceConfiguration;
 import com.sangeeth.cab.repository.DbTestConfiguration;
 
 public class EmployeeRepositoryTest {
@@ -35,7 +26,7 @@ public class EmployeeRepositoryTest {
 	@BeforeClass
 	public static void setup(){
 		
-		context = new AnnotationConfigApplicationContext(RepositoryConfiguration.class, DbTestConfiguration.class);
+		context = new AnnotationConfigApplicationContext(ServiceConfiguration.class, DbTestConfiguration.class);
 		context.getEnvironment().setActiveProfiles("integrated");
 		
 
@@ -66,7 +57,7 @@ public class EmployeeRepositoryTest {
 
 			Name name = new Name("hugh", "jackman", null);
 			
-			Employee employee = new Employee(new EmployeeId("V2123"), name, Role.EMPLOYEE,new CostCenter("beggar_bowl"),"team42","9999999999", null, null, new Email("name@company.com"), null,Gender.MALE);
+			Employee employee = new Employee("V2123", name, Role.EMPLOYEE,new CostCenter("beggar_bowl"),"team42","9999999999", null, null, new Email("name@company.com"), null,Gender.MALE);
 			repository.create(employee);
 		
 		
@@ -92,7 +83,7 @@ public class EmployeeRepositoryTest {
 
 		Name name = new Name("hugh", "jackman", null);
 		
-		Employee employee = new Employee(new EmployeeId("V2124"), name, Role.EMPLOYEE,new CostCenter("beggar_bowl"),"team42","9999999999", null, null, new Email("email@company.com"), null,Gender.MALE);
+		Employee employee = new Employee("V2124", name, Role.EMPLOYEE,new CostCenter("beggar_bowl"),"team42","9999999999", null, null, new Email("email@company.com"), null,Gender.MALE);
 		repository.create(employee);
 
 		

@@ -40,6 +40,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.googlecode.flyway.test.annotation.FlywayTest;
 import com.googlecode.flyway.test.junit.FlywayTestExecutionListener;
+import com.sangeeth.cab.configuration.ServiceConfiguration;
 import com.sangeeth.cab.configuration.WebConfiguration;
 import com.sangeeth.cab.contract.Address;
 import com.sangeeth.cab.contract.User;
@@ -56,7 +57,7 @@ import static java.util.Arrays.*;
 //@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(classes = {WebConfiguration.class, TestWebConfiguration.class})
+@ContextConfiguration(classes = {WebConfiguration.class, ServiceConfiguration.class, TestWebConfiguration.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class, FlywayTestExecutionListener.class })
 public class EmployeeControllerTest  {
 	
@@ -88,7 +89,7 @@ public class EmployeeControllerTest  {
 		mvc.perform(get("/employees?name=John").accept(jsonType))
 								.andExpect(status().isOk())
 								.andExpect(content().mimeType(jsonType))
-								.andExpect(jsonPath("$..employeeId").value(asList("PC0282"))); 
+								.andExpect(jsonPath("$..employeeId").value(asList("PC0282","PC0283","PC0284"))); 
 										
 	}
 	

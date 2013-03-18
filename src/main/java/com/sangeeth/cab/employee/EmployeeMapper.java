@@ -16,7 +16,7 @@ final class EmployeeMapper implements RowMapper<Employee> {
 
 		
 		Integer dbId = rs.getInt("ID");
-		EmployeeId employeeId = new EmployeeId(rs.getString("EMP_ID"));
+		String employeeId = rs.getString("EMP_ID");
 		String lastName = rs.getString("LAST_NAME");
 		String firstName = rs.getString("FIRST_NAME");
 		String middleName = rs.getString("MIDDLE_NAME");

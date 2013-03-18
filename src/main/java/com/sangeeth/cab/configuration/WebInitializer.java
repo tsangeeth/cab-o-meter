@@ -5,6 +5,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.apache.log4j.Logger;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
@@ -18,12 +19,14 @@ public class WebInitializer implements WebApplicationInitializer {
 	public void onStartup(ServletContext servletContext)
 			throws ServletException {
 		logger.info("Starting cab-o-meter....");
-		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(WebConfiguration.class);
+		AnnotationConfigWebApplicationContext serviceContext = new AnnotationConfigWebApplicationContext();
+		serviceContext.register(ServiceConfiguration.class,DatabaseConfiguration.class);
+		servletContext.addListener(new ContextLoaderListener(serviceContext));
 		
-		servletContext.addListener(new ContextLoaderListener(context));
-
-		ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(context));
+		AnnotationConfigWebApplicationContext webContext = new AnnotationConfigWebApplicationContext();
+		webContext.register(WebConfiguration.class);
+		
+		ServletRegistration.Dynamic servlet = servletContext.addServlet("dispatcher", new DispatcherServlet(webContext));
 		servlet.addMapping("/api/*");
 		servlet.setLoadOnStartup(1);
 	}

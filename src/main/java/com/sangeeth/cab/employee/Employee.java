@@ -5,7 +5,7 @@ public class Employee {
 
 
 	private final Integer dbId;
-	private final EmployeeId employeeId;
+	private final String employeeId;
 	private final Name name;
 	private final Role role;
 	private final CostCenter costCenter;
@@ -17,7 +17,7 @@ public class Employee {
 	private final Manager manager;
 	private final Gender gender;
 
-	Employee(Integer dbId, EmployeeId employeeId, Name name, Role role,
+	Employee(Integer dbId, String employeeId, Name name, Role role,
 			CostCenter costCenter, String teamName, String contact,
 			String alternateContact, String landlineNumber, Email email,
 			Manager manager, Gender gender) {
@@ -37,7 +37,7 @@ public class Employee {
 		this.gender = gender;
 	}
 
-	public Employee(EmployeeId employeeId, Name name, Role role,
+	public Employee(String employeeId, Name name, Role role,
 			CostCenter costCenter, String teamName, String contact,
 			String alternateContact, String landlineNumber, Email email,
 			Manager manager, Gender gender) {
@@ -46,7 +46,7 @@ public class Employee {
 	
 
 
-	public EmployeeId getEmployeeId() {
+	public String getEmployeeId() {
 		return employeeId;
 	}
 

@@ -1,6 +1,10 @@
 package com.sangeeth.cab.employee;
 
-public class EmployeeId {
+import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class EmployeeId implements Serializable{
 
 	private final String value;
 
@@ -8,6 +12,7 @@ public class EmployeeId {
 		this.value = value;
 	}
 
+	@JsonProperty
 	String getValue() {
 		return value;
 	}
