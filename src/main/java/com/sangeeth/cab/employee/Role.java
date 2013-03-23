@@ -2,7 +2,7 @@ package com.sangeeth.cab.employee;
 
 public enum Role {
 	
-	EMPLOYEE("Employee"), MANAGER("Manager"), TRIP_MANAGER("TripManager");
+	EMPLOYEE("Employee"), MANAGER("Manager"), TRIP_MANAGER("TripManager"), ADMIN("Admin");
 
 	private final String value;
 
@@ -24,6 +24,7 @@ public enum Role {
 		case "Employee": return EMPLOYEE;
 		case "Manager": return MANAGER;
 		case "TripManager": return TRIP_MANAGER;
+		case "Admin": return ADMIN;
 		default: throw new RuntimeException("Invalid Role:" + value);
 		}
 	}

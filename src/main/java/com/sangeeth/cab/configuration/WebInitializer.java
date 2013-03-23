@@ -20,7 +20,7 @@ public class WebInitializer implements WebApplicationInitializer {
 			throws ServletException {
 		logger.info("Starting cab-o-meter....");
 		AnnotationConfigWebApplicationContext serviceContext = new AnnotationConfigWebApplicationContext();
-		serviceContext.register(ServiceConfiguration.class,DatabaseConfiguration.class);
+		serviceContext.register(ServiceConfiguration.class, DatabaseConfiguration.class);
 		servletContext.addListener(new ContextLoaderListener(serviceContext));
 		
 		AnnotationConfigWebApplicationContext webContext = new AnnotationConfigWebApplicationContext();

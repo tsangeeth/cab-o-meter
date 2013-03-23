@@ -13,8 +13,6 @@ final class EmployeeMapper implements RowMapper<Employee> {
 
 	@Override
 	public Employee mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-		
 		Integer dbId = rs.getInt("ID");
 		String employeeId = rs.getString("EMP_ID");
 		String lastName = rs.getString("LAST_NAME");
@@ -29,9 +27,8 @@ final class EmployeeMapper implements RowMapper<Employee> {
 		Email emailId = new Email(rs.getString("EMAIL"));
 		String genderValue = rs.getString("GENDER");
 		System.out.println("GenderVALUE:"+ genderValue);
-	  	
 		Gender gender = Gender.convert(genderValue);
-		
+
 	  	return new Employee(dbId, employeeId, new Name(lastName, firstName, middleName), role, costCenter, teamName, contactNumber, alternateContactNumber, landlineNumber, emailId, null, gender);
 	}
 }
