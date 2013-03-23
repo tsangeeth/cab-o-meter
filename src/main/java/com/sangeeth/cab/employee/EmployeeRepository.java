@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class EmployeeRepository implements IEmployeeRepository {
 
+	private static final String Q_SEARCH_BY_NAME = "select ID, EMP_ID,FIRST_NAME,LAST_NAME,MIDDLE_NAME,ROLE,COST_CENTRE,TEAM_NAME,CONTACT_NO,ALTERNATE_CONTACT_NO,LANDLINE_NO,EMAIL,MANAGER_ID,GENDER from employee where LAST_NAME like ?";
 	private final JdbcTemplate template;
 	private final String INSERT_STATEMENT = "INSERT INTO employee (EMP_ID,LAST_NAME,FIRST_NAME,MIDDLE_NAME,ROLE,COST_CENTRE,TEAM_NAME,CONTACT_NO,ALTERNATE_CONTACT_NO,LANDLINE_NO,EMAIL,MANAGER_ID,GENDER) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
@@ -48,7 +49,7 @@ public class EmployeeRepository implements IEmployeeRepository {
 
 	public List<Employee> search(String name) {
 		return this.template.query(
-				"select ID, EMP_ID,FIRST_NAME,LAST_NAME,MIDDLE_NAME,ROLE,COST_CENTRE,TEAM_NAME,CONTACT_NO,ALTERNATE_CONTACT_NO,LANDLINE_NO,EMAIL,MANAGER_ID,GENDER from employee",
+				Q_SEARCH_BY_NAME,
 				new RowMapper<Employee>() {
 					public Employee mapRow(ResultSet rs, int rowNum)
 							throws SQLException {
@@ -71,7 +72,7 @@ public class EmployeeRepository implements IEmployeeRepository {
 						return new Employee(id, employeeId, name, role, new CostCenter(costCentre), teamName, contactNumber,
 								alternateContactNumber, landlineNumber, emailId, (Manager)null, gender);
 					}
-				});
+				}, "%" + name + "%");
 	}
 
 }
