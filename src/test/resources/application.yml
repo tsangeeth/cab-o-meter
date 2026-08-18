@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: ${CAB_TEST_DB_URL:jdbc:postgresql://localhost:5432/cab_o_meter_test}
+    username: ${CAB_DB_USER:cabwala}
+    password: ${CAB_DB_PASSWORD:secret}
+  flyway:
+    clean-disabled: false
+    locations: classpath:db/migration
+
+server:
+  servlet:
+    session:
+      timeout: 30m
+
+cab:
+  cors:
+    origins: http://localhost:5173

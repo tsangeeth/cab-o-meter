@@ -1,28 +1,32 @@
 package com.sangeeth.cab.employee;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Gender {
-	MALE('M'), FEMALE('F');
-	
-	private final Character value;
+    MALE('M'),
+    FEMALE('F');
 
-	private Gender(Character value){
-		this.value = value;
-	}
-	
-	public String value(){
-		return value.toString();
-	}
+    private final char value;
 
-	@Override
-	public String toString() {
-		return value.toString();
-	}
-	
-	public static Gender convert(String value){
-		switch(value.charAt(0)){
-		case 'M': return MALE;
-		case 'F': return FEMALE;
-		default:throw new RuntimeException("invalid gender:" + value);
-		}
-	}
+    Gender(char value) {
+        this.value = value;
+    }
+
+    @JsonValue
+    public String value() {
+        return Character.toString(value);
+    }
+
+    @Override
+    public String toString() {
+        return value();
+    }
+
+    public static Gender convert(String value) {
+        return switch (value.charAt(0)) {
+            case 'M' -> MALE;
+            case 'F' -> FEMALE;
+            default -> throw new IllegalArgumentException("Invalid gender: " + value);
+        };
+    }
 }

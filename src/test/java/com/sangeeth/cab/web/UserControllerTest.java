@@ -1,110 +1,48 @@
-package com.sangeeth.cab.web;
+package com.sangeeth.cab;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.stub;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.slf4j.ILoggerFactory;
-import org.slf4j.helpers.NOPLoggerFactory;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.server.MockMvc;
-import org.springframework.test.web.server.MvcResult;
-import org.springframework.test.web.server.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.sangeeth.cab.configuration.ServiceConfiguration;
-import com.sangeeth.cab.configuration.WebConfiguration;
-import com.sangeeth.cab.contract.Address;
-import com.sangeeth.cab.contract.User;
-import com.sangeeth.cab.web.authentication.AutoLoginInterceptor;
-import com.sangeeth.cab.web.authentication.IAutheticationStore;
-import com.sangeeth.cab.web.configuration.TestWebConfiguration;
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
+class UserControllerTest {
 
+    @Autowired
+    private MockMvc mvc;
 
+    @Test
+    void shouldGiveInformationAboutEmployee() throws Exception {
+        MockHttpSession session = TestSessions.signIn(mvc, "PC0014", "password");
 
-import static java.util.Arrays.*;
+        mvc.perform(get("/api/user").session(session).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.employeeId").value("PC0014"))
+                .andExpect(jsonPath("$.firstName").value("Mannix"))
+                .andExpect(jsonPath("$.lastName").value("Buckley"))
+                .andExpect(jsonPath("$.role").value("Employee"))
+                .andExpect(jsonPath("$.costCentre").value("12345"))
+                .andExpect(jsonPath("$.address.city").value("Chennai"));
+    }
 
-
-
-//@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {WebConfiguration.class, ServiceConfiguration.class, TestWebConfiguration.class})
-public class UserControllerTest  {
-	
-	
-	@Autowired
-	private WebApplicationContext context;
-	
-	@Autowired
-	private AutoLoginInterceptor loginInterceptor;
-
-
-	private MockMvc mvc;
-
-	private User defaultUser;
-	
-	
-	@Before
-	public void setup() {
-		this.mvc = MockMvcBuilders.webApplicationContextSetup(context).build();
-		Address address = new Address("No.10, 12th Avenue", "Madagacar Street", "Kingston Cross", "Fantasy City", "Utopia","near Atlantis");
-		defaultUser = new User("JB442X", "John", "Doe","Arumugam", "admin", "administration", address);
-	}
-
-	@Test
-	public void shouldGiveInformationAboutEmployee() throws Exception {
-		// Arrange
-		loginInterceptor.signIn(defaultUser);
-		
-		// Act
-		MediaType jsonType = MediaType.APPLICATION_JSON;
-		
-		System.out.println(mvc.perform(get("/user").accept(jsonType)).andReturn().getResponse().getContentAsString());
-		
-		mvc.perform(get("/user").accept(jsonType))
-		//Assert
-			.andExpect(status().isOk())
-			.andExpect(content().mimeType(jsonType)) 
-			.andExpect(jsonPath("$.employeeId").value("JB442X"))
-			.andExpect(jsonPath("$.firstName").value("John"))
-			.andExpect(jsonPath("$.lastName").value("Doe"))
-			.andExpect(jsonPath("$.middleName").value("Arumugam"))
-			.andExpect(jsonPath("$.role").value("admin"))
-			.andExpect(jsonPath("$.costCentre").value("administration"))
-			.andExpect(jsonPath("$.address.line1").value("No.10, 12th Avenue"))
-			.andExpect(jsonPath("$.address.line2").value("Madagacar Street"))
-			.andExpect(jsonPath("$.address.locality").value("Kingston Cross"))
-			.andExpect(jsonPath("$.address.city").value("Fantasy City"))
-			.andExpect(jsonPath("$.address.state").value("Utopia"))
-			.andExpect(jsonPath("$.address.landmark").value("near Atlantis"));
-	}
-	
-
-
+    @Test
+    void shouldRejectUnknownCredentials() throws Exception {
+        mvc.perform(post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"employeeId\":\"NOPE\",\"password\":\"wrong\"}"))
+                .andExpect(status().isUnauthorized());
+    }
 }
