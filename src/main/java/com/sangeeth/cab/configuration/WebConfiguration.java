@@ -1,56 +1,48 @@
 package com.sangeeth.cab.configuration;
 
+import java.util.Arrays;
 
-import java.util.Locale;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.sangeeth.cab.web.EmployeeController;
-import com.sangeeth.cab.web.authentication.AuthenticationStore;
-import com.sangeeth.cab.web.authentication.IAutheticationStore;
-
+import com.sangeeth.cab.web.authentication.AuthenticationInterceptor;
 
 @Configuration
-@EnableWebMvc
-@ComponentScan(basePackageClasses={EmployeeController.class})
-@EnableTransactionManagement
-public class WebConfiguration {
-	
-	@Bean
-	@Scope(proxyMode=ScopedProxyMode.INTERFACES, value="session")
-	public IAutheticationStore authenticationStore(){
-		return new AuthenticationStore();
-	}
+public class WebConfiguration implements WebMvcConfigurer {
 
-	
-	@Bean
-    public ViewResolver viewResolver()
-    {
-		return new ViewResolver() {
-			public View resolveViewName(String viewName, Locale locale) throws Exception {
-				MappingJackson2JsonView view = new MappingJackson2JsonView();
-				ObjectMapper objectMapper = new ObjectMapper();
-				view.setObjectMapper(objectMapper);
-				objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, false);
-				view.setExtractValueFromSingleKeyModel(true);
-				return view;
-			}
-		};
+    private final AuthenticationInterceptor authenticationInterceptor;
+    private final String[] corsOrigins;
+
+    public WebConfiguration(
+            AuthenticationInterceptor authenticationInterceptor,
+            @Value("${cab.cors.origins:http://localhost:5173}") String corsOrigins) {
+        this.authenticationInterceptor = authenticationInterceptor;
+        this.corsOrigins = Arrays.stream(corsOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank())
+                .toArray(String[]::new);
     }
-	
-	
 
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(authenticationInterceptor).addPathPatterns("/api/**");
+    }
 
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOrigins(corsOrigins)
+                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
 
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("forward:/index.html");
+    }
 }

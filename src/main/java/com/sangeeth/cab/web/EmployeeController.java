@@ -1,27 +1,27 @@
 package com.sangeeth.cab.web;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.sangeeth.cab.employee.Employee;
 import com.sangeeth.cab.employee.EmployeeRepository;
+import com.sangeeth.cab.web.dto.EmployeeResponse;
 
-@Controller
+@RestController
+@RequestMapping("/api")
 public class EmployeeController {
-	
-	@Autowired
-	public EmployeeRepository employeeRepository;
 
-	@RequestMapping(value = "/employees", method = RequestMethod.GET, produces="application/json")
-	public List<Employee> search(WebRequest request){
-		String name = request.getParameter("name");
-		return employeeRepository.search(name);
-	}
+    private final EmployeeRepository employeeRepository;
+
+    public EmployeeController(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
+
+    @GetMapping("/employees")
+    public List<EmployeeResponse> search(@RequestParam(name = "name", required = false, defaultValue = "") String name) {
+        return EmployeeResponse.listFrom(employeeRepository.search(name));
+    }
 }

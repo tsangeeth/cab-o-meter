@@ -1,5 +1,11 @@
 target/
-.project
+.idea/
+*.iml
 .classpath
-.settings
+.project
+.settings/
 extjs4/
+frontend/node_modules/
+frontend/dist/
+.DS_Store
+*.log

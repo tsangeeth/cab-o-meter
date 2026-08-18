@@ -1,118 +1,52 @@
-package com.sangeeth.cab.web;
+package com.sangeeth.cab;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.stub;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.*;
+import java.time.LocalDate;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.slf4j.ILoggerFactory;
-import org.slf4j.helpers.NOPLoggerFactory;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.server.MockMvc;
-import org.springframework.test.web.server.MvcResult;
-import org.springframework.test.web.server.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.sangeeth.cab.configuration.ServiceConfiguration;
-import com.sangeeth.cab.configuration.WebConfiguration;
-import com.sangeeth.cab.contract.Address;
-import com.sangeeth.cab.contract.User;
-import com.sangeeth.cab.web.authentication.AutoLoginInterceptor;
-import com.sangeeth.cab.web.authentication.IAutheticationStore;
-import com.sangeeth.cab.web.configuration.TestWebConfiguration;
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
+class CabRequestControllerTest {
 
+    @Autowired
+    private MockMvc mvc;
 
+    @Test
+    void shouldCreateNewCabRequest() throws Exception {
+        MockHttpSession session = TestSessions.signIn(mvc, "PC0014", "password");
+        LocalDate start = LocalDate.now().plusDays(3);
+        LocalDate end = start.plusDays(14);
+        String body = """
+                {
+                  "startDate": "%s",
+                  "endDate": "%s",
+                  "loginTime": "09:00:00",
+                  "logoutTime": "18:30:00",
+                  "reoccurDays": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+                  "reason": "Office commute"
+                }
+                """.formatted(start, end);
 
-import static java.util.Arrays.*;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.server.MockMvc;
-import org.springframework.test.web.server.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-
-import com.sangeeth.cab.configuration.WebConfiguration;
-import com.sangeeth.cab.contract.Address;
-import com.sangeeth.cab.contract.User;
-import com.sangeeth.cab.web.authentication.AutoLoginInterceptor;
-import com.sangeeth.cab.web.configuration.TestWebConfiguration;
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {WebConfiguration.class, ServiceConfiguration.class, TestWebConfiguration.class})
-public class CabRequestControllerTest  {
-	
-	@Autowired
-	private WebApplicationContext context;
-	
-	@Autowired
-	private AutoLoginInterceptor loginInterceptor;
-
-
-	private MockMvc mvc;
-
-	private User defaultUser;
-	
-	
-	@Before
-	public void setup() {
-		this.mvc = MockMvcBuilders.webApplicationContextSetup(context).build();
-		Address address = new Address("No.10, 12th Avenue", "Madagacar Street", "Kingston Cross", "Fantasy City", "Utopia","near Atlantis");
-		defaultUser = new User("JB442X", "John", "Doe","Arumugam", "admin", "administration", address);
-	}
-	
-	@Test
-	@Ignore
-	public void shouldCreateNewCabRequest() throws Exception{
-		// Arrange
-				loginInterceptor.signIn(defaultUser);
-				
-		// Act
-		MediaType jsonType = MediaType.APPLICATION_JSON;
-		
-		mvc.perform(
-				post("/cabrequest")
-					.param("pickupDate", "quectel")
-					.param("pickupTime", "quectel")
-					.param("pickupLocation", "10.22.2.2")
-					.param("dropDate", "90002")
-					.param("dropTime", "2")
-					.param("dropLocation", "false")
-					.param("daysOfWeek", "mon", "tue","wed","thu")
-					.accept(jsonType)
-			)
-		// Assert	
-			.andExpect(status().isOk());
-	}
-	
+        mvc.perform(post("/api/cab-requests")
+                        .session(session)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.employeeId").value("PC0014"))
+                .andExpect(jsonPath("$.status").value("pending"))
+                .andExpect(jsonPath("$.reason").value("Office commute"));
+    }
 }

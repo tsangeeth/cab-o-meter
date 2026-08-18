@@ -1,93 +1,80 @@
-package com.sangeeth.cab.employee;
+package com.sangeeth.cab;
 
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
-import javax.sql.DataSource;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.googlecode.flyway.core.Flyway;
-import com.sangeeth.cab.configuration.ServiceConfiguration;
-import com.sangeeth.cab.repository.DbTestConfiguration;
+import com.sangeeth.cab.employee.CostCenter;
+import com.sangeeth.cab.employee.Email;
+import com.sangeeth.cab.employee.Employee;
+import com.sangeeth.cab.employee.EmployeeId;
+import com.sangeeth.cab.employee.EmployeeRepository;
+import com.sangeeth.cab.employee.Gender;
+import com.sangeeth.cab.employee.IEmployeeRepository;
+import com.sangeeth.cab.employee.Name;
+import com.sangeeth.cab.employee.Role;
 
-public class EmployeeRepositoryTest {
+@SpringBootTest
+@Transactional
+class EmployeeRepositoryTest {
 
-	public static Flyway flyway;
-	static AnnotationConfigApplicationContext context;
-	private static JdbcTemplate dbtemplate;
-	
-	@BeforeClass
-	public static void setup(){
-		
-		context = new AnnotationConfigApplicationContext(ServiceConfiguration.class, DbTestConfiguration.class);
-		context.getEnvironment().setActiveProfiles("integrated");
-		
+    @Autowired
+    private IEmployeeRepository repository;
 
-		context.start();
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
-		flyway = context.getBean(Flyway.class);
-		
-		DataSource dataSource = context.getBean(DataSource.class);
-		dbtemplate = new JdbcTemplate(dataSource);
-		flyway.setInitOnMigrate(true);
-		flyway.migrate();
+    @Test
+    void shouldCreate() {
+        Employee employee = new Employee(
+                "V2123",
+                new Name("hugh", "jackman", null),
+                Role.EMPLOYEE,
+                new CostCenter("beggar_bowl"),
+                "team42",
+                "9999999999",
+                null,
+                null,
+                new Email("name@company.com"),
+                null,
+                Gender.MALE);
+        repository.create(employee);
 
-	}
-	
-	@AfterClass
-	public static void cleanup(){
-		flyway.clean();
-		context.close();
-	}
+        Employee persisted = repository.read(new EmployeeId("V2123")).orElseThrow();
+        assertThat(persisted.employeeId()).isEqualTo("V2123");
+        assertThat(persisted.name()).isEqualTo(employee.name());
+        assertThat(persisted.role()).isEqualTo(Role.EMPLOYEE);
+        assertThat(persisted.email()).isEqualTo(employee.email());
+        assertThat(persisted.gender()).isEqualTo(Gender.MALE);
+        assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM employee WHERE emp_id = 'V2123'", Integer.class)).isEqualTo(1);
+    }
 
-	@Test
-	public void shouldCreate() throws Exception{
-		// Arrange
-		
-		// Act
-		try{
-			IEmployeeRepository repository = context.getBean(IEmployeeRepository.class);
+    @Test
+    void shouldRead() {
+        Employee employee = new Employee(
+                "V2124",
+                new Name("hugh", "jackman", null),
+                Role.EMPLOYEE,
+                new CostCenter("beggar_bowl"),
+                "team42",
+                "9999999999",
+                null,
+                null,
+                new Email("email@company.com"),
+                null,
+                Gender.MALE);
+        repository.create(employee);
+        assertThat(repository.read(new EmployeeId("V2124"))).isPresent();
+    }
 
-			Name name = new Name("hugh", "jackman", null);
-			
-			Employee employee = new Employee("V2123", name, Role.EMPLOYEE,new CostCenter("beggar_bowl"),"team42","9999999999", null, null, new Email("name@company.com"), null,Gender.MALE);
-			repository.create(employee);
-		
-		
-			String query = new StringBuilder("select ")
-									.append(EmployeeMapper.QUERY_FIELD_PART)
-									.append(" from employee where EMP_ID=?").toString(); 
-			
-		// Assert
-		Employee persistedEmployee = dbtemplate.queryForObject(query, new Object[]{"V2123"}, new EmployeeMapper());
-		assertNotNull(persistedEmployee);
-		assertThat(employee, is(persistedEmployee));
-		
-		}finally{
-			context.stop();
-			context.close();
-		}
-	}
-	
-	@Test
-	public void shouldRead(){
-//	Arrange
-		IEmployeeRepository repository = context.getBean(IEmployeeRepository.class);
-
-		Name name = new Name("hugh", "jackman", null);
-		
-		Employee employee = new Employee("V2124", name, Role.EMPLOYEE,new CostCenter("beggar_bowl"),"team42","9999999999", null, null, new Email("email@company.com"), null,Gender.MALE);
-		repository.create(employee);
-
-		
-		// Act
-		repository.read(new EmployeeId("V2124"));
-	}
+    @Test
+    void shouldSearchByLastName() {
+        assertThat(repository.search("Howell"))
+                .extracting(Employee::employeeId)
+                .contains("PC0282");
+    }
 }
